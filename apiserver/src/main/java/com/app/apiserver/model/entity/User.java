@@ -1,7 +1,7 @@
 package com.app.apiserver.model.entity;
 
-import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
@@ -11,6 +11,4 @@ public class User {
     private String email;
     private long createdAt;
     private long updatedAt;
-
-
 }

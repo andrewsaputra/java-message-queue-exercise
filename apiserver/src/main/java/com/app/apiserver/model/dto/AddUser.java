@@ -1,9 +1,10 @@
 package com.app.apiserver.model.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class AddUser {
-    private String name;
-    private String email;
+public record AddUser(
+        @NotBlank String name,
+        @NotBlank @Email String email
+) {
 }

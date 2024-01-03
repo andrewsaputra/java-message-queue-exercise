@@ -1,9 +1,9 @@
 package com.app.apiserver.controller;
 
 import com.app.apiserver.model.basic.ApiResponse;
-import com.app.apiserver.model.dto.AddUser;
-import com.app.apiserver.model.entity.User;
-import com.app.apiserver.service.IUserService;
+import com.app.apiserver.model.dto.AddProduct;
+import com.app.apiserver.model.entity.Product;
+import com.app.apiserver.service.IProductService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,29 +14,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-
 @RestController
-@RequestMapping(path = "/users")
-public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+@RequestMapping(path = "/products")
+public class ProductController {
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    private final IUserService userService;
+    private final IProductService productService;
 
     @Autowired
-    public UserController(IUserService userService) {
-        this.userService = userService;
+    public ProductController(IProductService productService) {
+        this.productService = productService;
     }
 
-
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ApiResponse> getUser(@PathVariable("id") int userId) throws Exception {
-        Optional<User> user = userService.getUser(userId);
+    public ResponseEntity<ApiResponse> getProduct(@PathVariable("id") int productId) throws Exception {
+        Optional<Product> product = productService.getProduct(productId);
 
         HttpStatus statusCode;
         ApiResponse apiResponse;
-        if (user.isPresent()) {
+        if (product.isPresent()) {
             statusCode = HttpStatus.OK;
-            apiResponse = new ApiResponse("", user.get());
+            apiResponse = new ApiResponse("", product.get());
         } else {
             statusCode = HttpStatus.NOT_FOUND;
             apiResponse = new ApiResponse("data not found", null);
@@ -48,8 +46,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("id") int userId) throws Exception {
-        boolean success = userService.deleteUser(userId);
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("id") int productId) throws Exception {
+        boolean success = productService.deleteProduct(productId);
 
         HttpStatus statusCode;
         ApiResponse apiResponse;
@@ -67,9 +65,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody AddUser dto) throws Exception {
-        User newUser = userService.addUser(dto);
-        ApiResponse apiResponse = new ApiResponse("data added", newUser);
+    public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody AddProduct dto) throws Exception {
+        Product newProduct = productService.addProduct(dto);
+        ApiResponse apiResponse = new ApiResponse("data added", newProduct);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(apiResponse);

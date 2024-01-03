@@ -4,6 +4,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 public class Product {
@@ -12,8 +14,8 @@ public class Product {
     private int userId;
     private String name;
     private String description;
-    private String[] images;
-    private String[] compressedImages;
+    private List<String> images;
+    private List<String> compressedImages;
     private float price;
     private long createdAt;
     private long updatedAt;

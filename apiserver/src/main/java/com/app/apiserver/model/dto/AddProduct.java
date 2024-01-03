@@ -1,12 +1,16 @@
 package com.app.apiserver.model.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 
-@Data
-public class AddProduct {
-    private String userId;
-    private String productName;
-    private String productDescription;
-    private String productImages;
-    private float productPrice;
+import java.util.List;
+
+public record AddProduct(
+        @Positive int userId,
+        @NotBlank String productName,
+        @NotBlank String productDescription,
+        @NotEmpty List<String> productImages,
+        @Positive float productPrice
+) {
 }
