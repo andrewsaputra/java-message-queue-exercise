@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface IUserService {
     Optional<User> getUser(int userId) throws Exception;
 
-    boolean deleteUser(int userId) throws Exception;
+    void deleteUser(int userId) throws Exception;
 
     User addUser(AddUser dto) throws Exception;
 }

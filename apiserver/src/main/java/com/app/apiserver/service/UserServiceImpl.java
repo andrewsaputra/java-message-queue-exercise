@@ -2,56 +2,38 @@ package com.app.apiserver.service;
 
 import com.app.apiserver.model.dto.AddUser;
 import com.app.apiserver.model.entity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.app.apiserver.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final UserRepository userRepository;
 
-    @Override
-    public Optional<User> getUser(int userId) throws Exception {
-        Optional<User> result = Optional.empty();
-
-        if (userId == 404) {
-            return result;
-        }
-
-        if (userId == 500) {
-            throw new Exception("sample exception");
-        }
-
-        result = Optional.of(
-                new User(
-                        userId,
-                        "john smith",
-                        "email1@example.com",
-                        System.currentTimeMillis(),
-                        0L
-                )
-        );
-
-        return result;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public boolean deleteUser(int userId) throws Exception {
-        return userId != 404;
+    public Optional<User> getUser(int userId) throws Exception {
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public void deleteUser(int userId) throws Exception {
+        userRepository.deleteById(userId);
     }
 
     @Override
     public User addUser(AddUser dto) throws Exception {
-        User result = new User(
-                999,
+        User newData = new User(
+                0,
                 dto.name(),
                 dto.email(),
                 System.currentTimeMillis(),
                 0L
         );
-
-        return result;
+        return userRepository.save(newData);
     }
 }

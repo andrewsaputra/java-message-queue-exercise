@@ -8,9 +8,10 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -27,49 +28,34 @@ public class ProductController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ApiResponse> getProduct(@PathVariable("id") int productId) throws Exception {
+    public ApiResponse getProduct(@PathVariable("id") int productId) throws Exception {
         Optional<Product> product = productService.getProduct(productId);
-
-        HttpStatus statusCode;
-        ApiResponse apiResponse;
-        if (product.isPresent()) {
-            statusCode = HttpStatus.OK;
-            apiResponse = new ApiResponse("", product.get());
-        } else {
-            statusCode = HttpStatus.NOT_FOUND;
-            apiResponse = new ApiResponse("data not found", null);
+        if (product.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return ResponseEntity
-                .status(statusCode)
-                .body(apiResponse);
+        return new ApiResponse("data found", product.get());
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable("id") int productId) throws Exception {
-        boolean success = productService.deleteProduct(productId);
-
-        HttpStatus statusCode;
-        ApiResponse apiResponse;
-        if (success) {
-            statusCode = HttpStatus.OK;
-            apiResponse = new ApiResponse("data removed", null);
-        } else {
-            statusCode = HttpStatus.NOT_FOUND;
-            apiResponse = new ApiResponse("data not found", null);
-        }
-
-        return ResponseEntity
-                .status(statusCode)
-                .body(apiResponse);
+    public ApiResponse deleteProduct(@PathVariable("id") int productId) throws Exception {
+        productService.deleteProduct(productId);
+        return new ApiResponse("data removal processed", null);
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> addProduct(@Valid @RequestBody AddProduct dto) throws Exception {
-        Product newProduct = productService.addProduct(dto);
-        ApiResponse apiResponse = new ApiResponse("data added", newProduct);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(apiResponse);
+    public ApiResponse addProduct(@Valid @RequestBody AddProduct dto) throws Exception {
+        try {
+            Product newProduct = productService.addProduct(dto);
+            return new ApiResponse("data added", newProduct);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+
+            if (e.getCause() instanceof DataIntegrityViolationException) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            } else {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 }

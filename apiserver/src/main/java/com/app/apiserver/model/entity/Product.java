@@ -1,13 +1,16 @@
 package com.app.apiserver.model.entity;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@Table("products")
 public class Product {
     @Id
     private int id;
@@ -17,6 +20,9 @@ public class Product {
     private List<String> images;
     private List<String> compressedImages;
     private float price;
+
+    @Column("created_at")
     private long createdAt;
+    @Column("updated_at")
     private long updatedAt;
 }
