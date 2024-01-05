@@ -1,5 +1,6 @@
 package com.app.apiserver.service;
 
+import com.app.apiserver.model.basic.MQPublish;
 import com.app.apiserver.model.dto.AddProduct;
 import com.app.apiserver.model.entity.Product;
 import com.app.apiserver.repository.ProductRepository;
@@ -15,13 +16,16 @@ public class ProductServiceImpl implements IProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private final ProductRepository productRepository;
+    private final IMQPublisherService mqPublisher;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, IMQPublisherService mqPublisher) {
         this.productRepository = productRepository;
+        this.mqPublisher = mqPublisher;
     }
 
     @Override
     public Optional<Product> getProduct(int productId) throws Exception {
+        mqPublisher.publish(new MQPublish("test-queue", "sample message"));
         return productRepository.findById(productId);
     }
 
