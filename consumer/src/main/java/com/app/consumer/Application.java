@@ -1,4 +1,4 @@
-package com.app.apiserver;
+package com.app.consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +17,14 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static String startedAt;
 
-    public static void main(String[] args) {
+    public static void  main(String[] args) {
         SpringApplication.run(Application.class, args);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         ZonedDateTime now = ZonedDateTime.now();
         startedAt = now.format(dtf);
         logger.info("Application started at {}", startedAt);
+
     }
 
     @GetMapping(path = "/status")

@@ -10,23 +10,22 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class RabbitMQPublisherService implements IMQPublisherService {
+public class RabbitMQPublisher implements IMQPublisher {
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitMQPublisherService(RabbitTemplate rabbitTemplate) {
+    public RabbitMQPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
-    public void publish(MQPublish payload) throws Exception {
+    public void publish(String queue, String message) throws Exception {
         MessageProperties properties = new MessageProperties();
         properties.setContentType("text/plain");
 
-        Message message = MessageBuilder
-                .withBody(payload.message().getBytes(StandardCharsets.UTF_8))
+        Message payload = MessageBuilder
+                .withBody(message.getBytes(StandardCharsets.UTF_8))
                 .andProperties(properties)
                 .build();
-
-        rabbitTemplate.convertAndSend(payload.queue(), message);
+        rabbitTemplate.convertAndSend(queue, payload);
     }
 }

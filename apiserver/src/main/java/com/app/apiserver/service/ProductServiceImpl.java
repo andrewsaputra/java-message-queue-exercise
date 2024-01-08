@@ -1,6 +1,6 @@
 package com.app.apiserver.service;
 
-import com.app.apiserver.model.basic.MQPublish;
+import com.app.apiserver.config.RabbitMQConfig;
 import com.app.apiserver.model.dto.AddProduct;
 import com.app.apiserver.model.entity.Product;
 import com.app.apiserver.repository.ProductRepository;
@@ -16,16 +16,15 @@ public class ProductServiceImpl implements IProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private final ProductRepository productRepository;
-    private final IMQPublisherService mqPublisher;
+    private final IMQPublisher mqPublisher;
 
-    public ProductServiceImpl(ProductRepository productRepository, IMQPublisherService mqPublisher) {
+    public ProductServiceImpl(ProductRepository productRepository, IMQPublisher mqPublisher) {
         this.productRepository = productRepository;
         this.mqPublisher = mqPublisher;
     }
 
     @Override
     public Optional<Product> getProduct(int productId) throws Exception {
-        mqPublisher.publish(new MQPublish("test-queue", "sample message"));
         return productRepository.findById(productId);
     }
 
@@ -47,6 +46,8 @@ public class ProductServiceImpl implements IProductService {
                 System.currentTimeMillis(),
                 0L
         );
-        return productRepository.save(newData);
+        Product newProduct = productRepository.save(newData);
+        mqPublisher.publish(RabbitMQConfig.QUEUE_ADD_PRODUCTS, String.valueOf(newProduct.getId()));
+        return newProduct;
     }
 }

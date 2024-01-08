@@ -1,4 +1,4 @@
-package com.app.apiserver.config;
+package com.app.consumer.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
